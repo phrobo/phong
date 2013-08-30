@@ -101,6 +101,11 @@ class MeetingCommand(Command, MailCommandMixin):
       else:
         print "No meeting today, not sending reminder mail."
 
+  def isThereAMeetingToday(self):
+    now = datetime.date.today()
+    if now == self.nextMeetingDate():
+      return True
+
   def buildArgs(self, args):
     self.buildMailArgs(args)
     args.add_argument('-r', '--remind', help='Send out the reminder mail, if one is needed.', default=False, action='store_true')
