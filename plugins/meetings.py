@@ -13,15 +13,6 @@ class MeetingCommand(Command, MailCommandMixin):
   def helpText(self):
     return "Handle meeting minutes"
 
-  def shouldRun(self, args):
-    if args.minutes:
-      return True
-    if args.wiki:
-      return True
-    if args.remind:
-      return True
-    return False
-
   def nextMeetingDate(self):
     stamp = map(int, self.phong.wiki.getPage("Next Meeting", followRedir=False).getWikiText().split("/")[1].replace("]", "").split("-"))
     nextDate = datetime.date(stamp[0], stamp[1], stamp[2])

@@ -91,9 +91,6 @@ class Command(object):
   def helpText(self):
     raise NotImplemented()
 
-  def shouldRun(self, args):
-    raise False
-
   def execute(self, args):
     raise NotImplemented()
 
@@ -205,5 +202,4 @@ class Phong(object):
     args = parser.parse_args(argv)
     self.loadConfig(args.config)
 
-    if command.shouldRun(args):
-      return command.execute(args)
+    return command.execute(args)

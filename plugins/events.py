@@ -8,9 +8,6 @@ class SpiffPlugin(phong.Plugin):
     return [NewEventMails,]
 
 class NewEventCommand(phong.Command):
-  def shouldRun(self, args):
-    return True
-
   def getEvents(self, period, spiff):
     """Returns a tuple of lists of spiff.Event objects ihe form of (upcoming, today)"""
     upcoming = []
