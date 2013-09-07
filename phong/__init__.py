@@ -202,4 +202,4 @@ class Phong(object):
     args = parser.parse_args(argv)
     self.loadConfig(args.config)
 
-    return command.execute(args)
+    return args.command.execute(args)
