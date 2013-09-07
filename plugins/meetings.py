@@ -35,7 +35,7 @@ class MeetingCommand(Command, MailCommandMixin):
     lastMeeting = self.getMeeting(self.lastMeetingDate())
     return "<phongMinutesNotReady/>" not in lastMeeting.getWikiText()
 
-  def makeNextMeeting(self):
+  def makeNextMeeting(self, args):
     lastMeeting = self.lastMeetingDate()
     nextMeeting = self.nextMeetingDate()
     nextPage = self.phong.wiki.getPage("Next Meeting", followRedir=False)
@@ -81,7 +81,7 @@ class MeetingCommand(Command, MailCommandMixin):
         self._log.info("Minutes are not yet ready to be sent.")
 
     if args.wiki:
-      self.makeNextMeeting()
+      self.makeNextMeeting(args)
 
     if args.remind:
       if self.isThereAMeetingToday():
