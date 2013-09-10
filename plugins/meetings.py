@@ -103,7 +103,7 @@ class MeetingCommand(Command, MailCommandMixin):
     print "Sending reminder mail."
     self.sendMail(mailTemplate, subject, args)
     if not args.dry_run:
-      self._state['meetings'][str(self.nextMeetingDate())]['reminderSent'] = True
+      self.state['meetings'][str(self.nextMeetingDate())]['reminderSent'] = True
 
   def alreadyRemindedAboutMeeting(self):
     return bool(self.state['meetings'][str(self.nextMeetingDate())]['reminderSent'])
