@@ -148,8 +148,10 @@ class Phong(object):
         context.update(cxt)
     return context
 
-  def getTemplate(self, name, defaultContext={}, buildContext=True):
-    fullName = "%s%s"%(self._config.get('phong', 'mediawiki-template-prefix'), name)
+  def getTemplate(self, name, defaultContext={}, buildContext=True, prefix=None):
+    if prefix is None:
+      prefix = self._config.get('phong', 'mediawiki-template-prefix')
+    fullName = "%s%s"%(prefix, name)
     if buildContext:
       cxt = self.buildContext()
       cxt.update(defaultContext)
