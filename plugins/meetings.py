@@ -60,7 +60,7 @@ class MeetingCommand(Command, MailCommandMixin):
       nextPage.edit(summary="Update next meeting link", bot=True, text="#Redirect [[Meetings/%s]]"%(Meeting.formatMeetingDate(nextMeeting)))
 
   def mailLastMinutes(self, args):
-    if self.state['meetings'][str(self.lastMeetingDate())]['minutesSent'] == True
+    if self.state['meetings'][str(self.lastMeetingDate())]['minutesSent'] == True:
       return
     lastMeeting = self.getMeeting(self.lastMeetingDate())
     params = lastMeeting.templateParams()
