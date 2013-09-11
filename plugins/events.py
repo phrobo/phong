@@ -19,10 +19,10 @@ class NewEventCommand(phong.Command):
       now = datetime.datetime.utcnow().replace(tzinfo=tz.tzutc()).astimezone(tz.tzlocal())
       start = dateutil.parser.parse(e['start']).astimezone(tz.tzlocal())
       end = dateutil.parser.parse(e['end']).astimezone(tz.tzlocal())
-      if period > 0 and now < end and now+datetime.timedelta(days=period) > start:
-        upcoming.append(e)
       if now < end and now+datetime.timedelta(days=1) > start:
         today.append(e)
+      elif period > 0 and now < end and now+datetime.timedelta(days=period) > start:
+        upcoming.append(e)
       e['start'] = start.strftime(dateFormat)
       e['end'] = end.strftime(dateFormat)
 
