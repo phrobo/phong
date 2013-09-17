@@ -50,7 +50,7 @@ class MeetingCommand(Command, MailCommandMixin):
           prefix="")
       print "Creating next meeting at %s"%(params['meetingLink'])
       if not args.dry_run:
-        nextMeetingPage.edit(summary="Created new meeting page",
+        nextMeetingPage.wikiPage.edit(summary="Created new meeting page",
             bot=True, text=unicode(template))
     print "Updating [[Last Meeting]]"
     if not args.dry_run:
