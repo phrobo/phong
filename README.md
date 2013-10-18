@@ -253,3 +253,35 @@ variables available for use:
   from when the command is ran.
 * $period - How many days in advance Phong looked for upcoming events
 
+## build-documents
+
+Phong will happily build documents from git repos for you and make them available on the web!
+
+To properly use this out of the box, each git repository must have a Makefile at its root that
+has a default target to generate files. By default Phong will upload the
+following file suffixes:
+
+* .pdf
+* .png
+* .svg
+
+There are currently two modes of output. Specify -o /some/path to write to a
+directory, or -s some-bucket-name/path to upload to S3.
+
+### Options
+
+* -c COMMAND, --command COMMAND - Command line to generate PDF documents
+* -r REPO, --repo REPO - A URI that git clone will accept. Can be specified
+  multiple times for multiple repositories
+* -s S3CFG, --s3cfg S3CFG - Path to s3cmd configuration to use for uploading
+* -b BUCKET, --bucket BUCKET - Amazon S3 bucket name and path
+* -o OUTPUT, --output OUTPUT - Output path to copy files to
+* -f FILE_SUFFIX --file-suffix FILE_SUFFIX File suffixes to upload in addition
+  to the default set. May be specified more than once.
+
+### Wiki templates
+
+This command uses one template: Documents/Index. It has the following variables
+available for use:
+
+* $files - The list of files generated
