@@ -149,15 +149,18 @@ class Phong(object):
     return context
 
   def getTemplate(self, name, defaultContext={}, buildContext=True, prefix=None):
-    if prefix is None:
-      prefix = self._config.get('phong', 'mediawiki-template-prefix')
-    fullName = "%s%s"%(prefix, name)
     if buildContext:
       cxt = self.buildContext()
       cxt.update(defaultContext)
     else:
       cxt = defaultContext
-    return phong.templates.MediawikiTemplatePage(self.wiki, fullName, cxt)
+    engines = [
+      phong.templates.FileEngine(self),
+      phong.templates.WikiEngine(self),
+    ]
+    for e in engines:
+      if e.hasTemplate(name, prefix):
+        return e.getTemplate(name, prefix, cxt)
 
   def renderTemplate(self, name, context={}):
     cxt = self.buildContext()
@@ -199,9 +202,9 @@ class Phong(object):
     for command in self._commands:
       pluginArgs = subparser.add_parser(command.name(),
           help=command.helpText())
-      pluginArgs.set_defaults(command=command)
+      pluginArgs.set_defaults(command_obj=command)
       command.buildArgs(pluginArgs)
     args = parser.parse_args(argv)
     self.loadConfig(args.config)
 
-    return args.command.execute(args)
+    return args.command_obj.execute(args)

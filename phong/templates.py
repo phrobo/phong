@@ -1,6 +1,17 @@
 from Cheetah.Template import Template
 from wikitools import page
 import logging
+import os
+
+class TemplateEngine(object):
+  def __init__(self, phong):
+    self._phong = phong
+
+  def hasTemplate(self, pageName, prefix):
+    raise NotImplemented
+
+  def getTemplate(self, pageName, prefix, defaultCxt):
+    raise NotImplemented
 
 class PhongTemplate(object):
   def __init__(self, pageName, defaultContext={}):
@@ -27,11 +38,46 @@ class PhongTemplate(object):
   def __unicode__(self):
     return self.render()
 
+class FileEngine(TemplateEngine):
+  def __init__(self, phong):
+    super(FileEngine, self).__init__(phong)
+
+  def hasTemplate(self, pageName, prefix):
+    return os.path.exists(self.templatePath(pageName, prefix))
+
+  def getTemplate(self, pageName, prefix, defaultCxt):
+    return FileTemplate(self.templatePath(pageName, prefix), defaultCxt)
+
+  def templatePath(self, pageName, prefix):
+    if prefix is None:
+      prefix = ''
+    return os.path.sep.join(('templates', prefix+pageName))
+
+class FileTemplate(PhongTemplate):
+  def __init__(self, pageName, defaultCxt):
+    super(FileTemplate, self).__init__(pageName, defaultCxt)
+    self._file = pageName
+
+  def toRaw(self):
+    fh = open(self._file, 'r')
+    return fh.read()
+
+class WikiEngine(TemplateEngine):
+  def __init__(self, phong):
+    super(WikiEngine, self).__init__(phong)
+
+  def hasTemplate(self, pageName, prefix):
+    return True
+  
+  def getTemplate(self, pageName, prefix, defaultCxt):
+    if prefix is None:
+      prefix = self._phong._config.get('phong', 'mediawiki-template-prefix')
+    return MediawikiTemplatePage(self._phong.wiki, prefix+pageName, defaultCxt)
+
 class MediawikiTemplatePage(PhongTemplate):
   def __init__(self, wiki, pageName, defaultCxt):
     super(MediawikiTemplatePage, self).__init__(pageName, defaultCxt)
     self._page = page.Page(wiki._site, pageName)
-    print self._page
 
   @staticmethod
   def extractTemplateContents(text):
