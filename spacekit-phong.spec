@@ -59,12 +59,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/phong.py
 
 %files plugin-meetings
-%{_datadir}/phong/plugins/meetings.*
+%{_libdir}/phong/plugins/meetings.*
 
 %files plugin-synhak
-%{_datadir}/phong/plugins/synhak.*
+%{_libdir}/phong/plugins/synhak.*
 
 %files plugin-spiff-events
-%{_datadir}/phong/plugins/events.*
+%{_libdir}/phong/plugins/events.*
 
 %changelog

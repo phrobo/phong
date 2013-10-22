@@ -107,7 +107,7 @@ class Phong(object):
     self._plugins.getPluginLocator().setAnalyzers([analyzer])
     self._plugins.setPluginPlaces([
       './plugins/',
-      '/usr/share/phong/plugins',
+      '/usr/lib/phong/plugins',
     ])
     self._config = ConfigParser.ConfigParser()
     self.loadConfig(os.path.sep.join((os.path.dirname(__file__),
