@@ -285,3 +285,34 @@ This command uses one template: Documents/Index. It has the following variables
 available for use:
 
 * $files - The list of files generated
+
+## sudo
+
+Sometimes, you want to run a particular command as a different user, such as for
+processing e-mails, listing mailman subscriptions, or whatnot. Instead of
+configuring sudo, Phong provides a simpler and less flexible method of running
+commands as other users. In this command, Phong loads /etc/phong.cfg and ignores
+any other options passed before 'sudo' in the command line.
+
+To configure, create a [sudo] section in /etc/phong.cfg that maps aliases to
+commands, along with a subsection for each alias:
+
+    [sudo]
+    docs=build-documents
+
+    [sudo:build-documents]
+    allowed-users=apache
+    allowed-groups=www-dev,apache,wheel
+    run-as-user=phong
+
+The only required option in an alias' configuration is run-as-user. By default,
+allowed-users and allowed-groups is blank and nobody is permitted to run the
+command. run-as-user specifies the login name or UID to run the command as.
+Allowed-users and allowed-groups are comma-separated lists of login/group names
+or UIDs that are permitted to run a given alias.
+
+For convienence, a helpful setuid wrapper is provided as phong-su. It defaults
+to running /usr/bin/phong.py, and may only be changed at compile time. setup.py
+does not automatically set the setuid bit on phong-su, for security purposes.
+
+There are no command line options or templates for the sudo command.
