@@ -197,6 +197,7 @@ class Phong(object):
     if args[0].debug:
       logging.basicConfig(level=logging.DEBUG)
 
+    self.loadConfig(args[0].config)
     self.loadPlugins()
     subparser = parser.add_subparsers(help='action')
     for command in self._commands:
@@ -205,6 +206,5 @@ class Phong(object):
       pluginArgs.set_defaults(command_obj=command)
       command.buildArgs(pluginArgs)
     args = parser.parse_args(argv)
-    self.loadConfig(args.config)
 
     return args.command_obj.execute(args)
