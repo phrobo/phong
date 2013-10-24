@@ -38,6 +38,13 @@ Requires: %{name} = %{version}
 %description plugin-synhak
 A few bits of personality for Phong
 
+%package plugin-sudo
+Summary: Run phong commands in a sudo-like fashion
+Requires: %{name} = %{version}
+
+%description plugin-sudo
+Run phong commands in a sudo-like fashion
+
 %prep
 %setup -q
 
@@ -66,5 +73,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %files plugin-spiff-events
 %{_libdir}/phong/plugins/events.*
+
+%files plugin-sudo
+%{_libdir}/phong/plugins/sudo.*
+%{_bindir}/phong-su
 
 %changelog
