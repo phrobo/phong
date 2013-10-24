@@ -1,6 +1,7 @@
 /*
  * A simple setuid binary that runs /usr/bin/phong.py
  */
+#include <sys/types.h>
 #include <unistd.h>
 
 #ifndef PHONG_PATH
@@ -19,5 +20,6 @@ int main(int argc, char** argv)
     newArgv[i+1] = strdup(argv[i]);
   }
   newArgv[argc+1] = NULL;
+  setuid (0);
   return execv (newArgv[0], newArgv);
 }
