@@ -19,6 +19,8 @@ class BuildCommand(DistutilsBuild):
                   output_dir=self.build_temp,
                   debug=self.debug,
                   )
+    if not os.path.exists(self.build_scripts):
+      os.mkdir(self.build_scripts)
     self.copy_file(os.path.sep.join((self.build_temp, 'phong-su')),
                    os.path.sep.join((self.build_scripts, 'phong-su')))
   def run(self):
