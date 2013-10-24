@@ -43,25 +43,26 @@ class MeetingCommand(Command, MailCommandMixin):
 
     nextMeetingPage = self.getMeeting(nextMeeting)
     if nextMeetingPage.alreadyExists():
-      print "Next meeting page already exists!"
+      self._log.info("Next meeting page already exists!")
     else:
       params = nextMeetingPage.templateParams()
       template = self.phong.getTemplate("Meetings/Template", params,
           prefix="")
-      print "Creating next meeting at %s"%(params['meetingLink'])
+      self._log.info("Creating next meeting at %s", params['meetingLink'])
       if not args.dry_run:
         nextMeetingPage.wikiPage.edit(summary="Created new meeting page",
             bot=True, text=unicode(template))
-    print "Updating [[Last Meeting]]"
+    self._log.info("Updating [[Last Meeting]]")
     if not args.dry_run:
       lastPage.edit(summary="Update previous meeting link", bot=True,
           text="#Redirect [[Meetings/%s]]"%(Meeting.formatMeetingDate(lastMeeting)))
-    print "Updating [[Next Meeting]]"
+    self._log.info("Updating [[Next Meeting]]")
     if not args.dry_run:
       nextPage.edit(summary="Update next meeting link", bot=True, text="#Redirect [[Meetings/%s]]"%(Meeting.formatMeetingDate(nextMeeting)))
 
   def mailLastMinutes(self, args):
     if self.state['meetings'][str(self.lastMeetingDate())]['minutesSent'] == True:
+      self._log.info("Already sent latest minutes!")
       return
     lastMeeting = self.getMeeting(self.lastMeetingDate())
     params = lastMeeting.templateParams()
@@ -93,14 +94,14 @@ class MeetingCommand(Command, MailCommandMixin):
         else:
           self.remindAboutNextMeeting(args)
       else:
-        print "No meeting today, not sending reminder mail."
+        self._log.info("No meeting today, not sending reminder mail.")
 
   def remindAboutNextMeeting(self, args):
     nextMeeting = self.getMeeting(self.nextMeetingDate())
     params = nextMeeting.templateParams()
     mailTemplate = self.phong.renderTemplate("Meetings/ReminderMail", params)
     subject = "REMINDER: Meeting tonight!"
-    print "Sending reminder mail."
+    self._log.info("Sending reminder mail.")
     self.sendMail(mailTemplate, subject, args)
     if not args.dry_run:
       self.state['meetings'][str(self.nextMeetingDate())]['reminderSent'] = True
