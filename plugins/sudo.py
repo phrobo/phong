@@ -59,18 +59,18 @@ class SudoCommand(phong.Command):
     if permitted:
       if self.phong._config.has_option('sudo:'+alias, 'run-as-user'):
         runUser = self.phong._config.get('sudo:'+alias, 'run-as-user')
-        os.seteuid(pwd.getpwnam(runUser).pw_uid)
-        self._log.debug("Setting UID to %s", pwd.getpwnam(runUser).pw_uid)
+        runUID = pwd.getpwnam(runUser).pw_uid
       else:
         raise RuntimeError, "You must specify a user to run as, even if it is 'root'"
       if self.phong._config.has_option('sudo:'+alias, 'run-as-group'):
         runGroup = self.phong._config.get('sudo:'+alias, 'run-as-group')
         runGID = grp.getgrnam(runGroup).gr_gid
       else:
-        runUser = self.phong._config.get('sudo:'+alias, 'run-as-user')
-        runGID = pwd.getpwnam(runUser).pw_gid
+        runGID = pwd.getpwuid(runUID).pw_gid
       self._log.debug("Setting GID to %s", runGID)
-      os.setegid(runGID)
+      os.setgid(runGID)
+      self._log.debug("Setting UID to %s", runUID)
+      os.setuid(runUID)
       subPhong = phong.Phong()
       return subPhong.main(command+args.extra)
     else:
