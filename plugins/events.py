@@ -5,7 +5,7 @@ from dateutil import tz
 
 class SpiffPlugin(phong.Plugin):
   def availableCommands(self):
-    return [NewEventMails,]
+    return [NewEventMails,EventWiki]
 
 class NewEventCommand(phong.Command):
   def getEvents(self, period, spiff):
@@ -75,3 +75,23 @@ class NewEventMails(NewEventCommand, phong.MailCommandMixin):
     if not args.dry_run:
       for evt in filteredUpcoming:
         self.state['events'][str(evt['id'])]['upcomingMailSent'] = True
+
+class EventWiki(NewEventCommand):
+  def name(self):
+    return "update-events-wikipage"
+
+  def helpText(self):
+    return "Update the EventList wiki page with upcoming events"
+
+  def handleEvents(self, upcoming, today, args):
+    params = {}
+    params['upcoming'] = upcoming
+    params['period'] = args.period
+    template = self.phong.renderTemplate("Events/EventPage", params)
+    eventPage = self.phong.wiki.getPage("EventList")
+    try:
+      oldContents = eventPage.getWikiText()
+    except:
+      oldContents = None
+    if oldContents != template:
+      eventPage.edit(summary="Update events", bot=True, text=template)
