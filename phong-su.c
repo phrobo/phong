@@ -18,5 +18,6 @@ int main(int argc, char** argv)
   for (i = 1; i < argc; i++) {
     newArgv[i+1] = strdup(argv[i]);
   }
-  return execv (PHONG_PATH, newArgv);
+  newArgv[argc+2] = NULL;
+  return execv (newArgv[0], newArgv);
 }
