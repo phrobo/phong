@@ -7,7 +7,7 @@ Version:        0.0.1
 Release:        1%{?dist}
 Summary:        Phong helps you run a hackerspace
 
-License:        GPLv3
+License:        AGPLv3
 URL:            http://spacekit.phrobo.net/phong
 Source0:        %{name}-%{version}.tar.bz2
 
