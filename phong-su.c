@@ -18,6 +18,6 @@ int main(int argc, char** argv)
   for (i = 1; i < argc; i++) {
     newArgv[i+1] = strdup(argv[i]);
   }
-  newArgv[argc+2] = NULL;
+  newArgv[argc+1] = NULL;
   return execv (newArgv[0], newArgv);
 }
