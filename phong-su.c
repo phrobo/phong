@@ -20,6 +20,6 @@ int main(int argc, char** argv)
     newArgv[i+1] = strdup(argv[i]);
   }
   newArgv[argc+1] = NULL;
-  setuid (0);
+  setreuid (geteuid (), getuid ());
   return execv (newArgv[0], newArgv);
 }
