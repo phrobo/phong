@@ -186,7 +186,7 @@ class Phong(object):
   def main(self, argv):
     parser = argparse.ArgumentParser(prog='phong', add_help=False)
     parser.add_argument('-c', '--config', help='Configuration file to use',
-        default="~/.local/share/Phong/config")
+        default="/etc/phong.cfg")
     parser.add_argument('-d', '--dry-run', help='Dont actually do anything',
         default=False, action='store_true')
     parser.add_argument('-D', '--debug', help='Print debug messages',

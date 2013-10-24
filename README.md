@@ -68,7 +68,8 @@ For details about the cron command, see the relevant section below.
 
 Phong uses a simple ini-style configuration file. Internally, Phong uses
 python's ConfigParser module. Please see the relevant documentation for extra
-features not documented here.
+features not documented here. Pass the -c CONFIG option to phong to specify a
+different configuration file. The default is /etc/phong.cfg.
 
 There are a handful of important core configuration options, along with a
 special "defaults" section to supply options across all commands.
