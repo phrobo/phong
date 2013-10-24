@@ -11,7 +11,6 @@ License:        GPLv3
 URL:            http://spacekit.phrobo.net/phong
 Source0:        %{name}-%{version}.tar.bz2
 
-BuildArch:      noarch
 BuildRequires:  python-devel
 
 %description
@@ -45,6 +44,20 @@ Requires: %{name} = %{version}
 %description plugin-sudo
 Run phong commands in a sudo-like fashion
 
+%package plugin-documents
+Summary: Build PDFs from a set of SCM repos
+Requires: %{name} = %{version}
+
+%description plugin-documents
+Build PDFs from a set of SCM repos
+
+%package plugin-cron
+Summary: Run phong tasks at regular intervals
+Requires: %{name} = %{version}
+
+%description plugin-cron
+Run phong tasks at regular intervals
+
 %prep
 %setup -q
 
@@ -66,16 +79,22 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/phong.py
 
 %files plugin-meetings
-%{_libdir}/phong/plugins/meetings.*
+%{_prefix}/lib/phong/plugins/meetings.*
 
 %files plugin-synhak
-%{_libdir}/phong/plugins/synhak.*
+%{_prefix}/lib/phong/plugins/synhak.*
 
 %files plugin-spiff-events
-%{_libdir}/phong/plugins/events.*
+%{_prefix}/lib/phong/plugins/events.*
 
 %files plugin-sudo
-%{_libdir}/phong/plugins/sudo.*
+%{_prefix}/lib/phong/plugins/sudo.*
 %{_bindir}/phong-su
+
+%files plugin-documents
+%{_prefix}/lib/phong/plugins/documents.*
+
+%files plugin-cron
+%{_prefix}/lib/phong/plugins/cron.*
 
 %changelog
