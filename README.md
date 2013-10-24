@@ -305,12 +305,14 @@ commands, along with a subsection for each alias:
     allowed-users=apache
     allowed-groups=www-dev,apache,wheel
     run-as-user=phong
+    run-as-group=phong
 
 The only required option in an alias' configuration is run-as-user. By default,
 allowed-users and allowed-groups is blank and nobody is permitted to run the
 command. run-as-user specifies the login name or UID to run the command as.
 Allowed-users and allowed-groups are comma-separated lists of login/group names
-or UIDs that are permitted to run a given alias.
+or UIDs that are permitted to run a given alias. If run-as-group is not
+specified, it defaults to the primary group for the login specified in run-as-user.
 
 For convienence, a helpful setuid wrapper is provided as phong-su. It defaults
 to running /usr/bin/phong.py, and may only be changed at compile time. setup.py
