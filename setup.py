@@ -38,7 +38,7 @@ setup(name='phong',
   packages=['phong'],
   scripts=['phong.py'],
   data_files=[
-    ('/usr/lib/phong/plugins', pluginFiles)
+    ('lib/phong/plugins', pluginFiles)
   ],
   cmdclass={'build': BuildCommand}
 )
