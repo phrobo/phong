@@ -319,3 +319,20 @@ to running /usr/bin/phong.py, and may only be changed at compile time. setup.py
 does not automatically set the setuid bit on phong-su, for security purposes.
 
 There are no command line options or templates for the sudo command.
+
+## tweet
+
+The tweet command sends a tweet.
+
+To configure, you need to visit http://dev.twitter.com/apps and generate a set
+of OAuth tokens which are then placed in your phong.cfg:
+
+    [twitter]
+    consumer_key=your-consumer-key
+    consumer_secret=consumer-secret
+    access_token=access-token
+    access_secret=access-token-secret
+
+Then, it is as simple as:
+
+    $ phong.py tweet 'Hello, World!'
