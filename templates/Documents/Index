@@ -1,10 +1,30 @@
+<!DOCTYPE html>
 <html>
+  <head>
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+    #title {
+      background:url('impress/logo/logo-128.png') right center no-repeat;
+    }
+    </style>
+  </head>
 <body>
-<h1>Documents</h1>
-<ul>
-#for file in $files
-<li><a href="$file">$file</a></li>
-#end for
-</ul>
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 page-header" id="title">
+      <h1>Documents</h1>
+    </div>
+  <div class="row">
+    <div class="col-md-4">
+      <ul>
+        #for file in $files
+        <li><a href="$file">$file</a></li>
+        #end for
+      </ul>
+    </div>
+    <div class="col-md-8">
+      $readme
+    </div>
+  </div>
 </body>
-</html.
+</html>

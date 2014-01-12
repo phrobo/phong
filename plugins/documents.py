@@ -20,6 +20,7 @@ import subprocess
 import tempfile
 import os
 import shutil
+import markdown
 
 class DocumentsPlugin(phong.Plugin):
   def availableCommands(self):
@@ -74,7 +75,14 @@ class BuildDocumentsCommand(phong.Command):
                 outname
               )
               foundFiles.append('/'.join((root.replace(repoDir, ''), f))[1:])
-    params = {'files': foundFiles}
+    try:
+      readmeFile = open(os.path.sep.join((repoDir, 'README.md')), 'r')
+      readme = markdown.markdown(readmeFile.read())
+    except:
+      readme = ""
+
+    params = {'files': foundFiles, 'readme': readme}
+
     indexContents = self.phong.renderTemplate("Documents/Index", params)
     indexFile = open(os.path.sep.join((outputDir, 'index.html')), 'w')
     indexFile.write(indexContents)
