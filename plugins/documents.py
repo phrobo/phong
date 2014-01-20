@@ -83,10 +83,12 @@ class BuildDocumentsCommand(phong.Command):
 
     params = {'files': foundFiles, 'readme': readme}
 
-    indexContents = self.phong.renderTemplate("Documents/Index", params)
-    indexFile = open(os.path.sep.join((outputDir, 'index.html')), 'w')
-    indexFile.write(indexContents)
-    indexFile.close()
+    indexFilename = os.path.sep.join((outputDir, 'index.html'))
+    if not os.path.exists(indexFilename):
+      indexContents = self.phong.renderTemplate("Documents/Index", params)
+      indexFile = open(os.path.sep.join((outputDir, 'index.html')), 'w')
+      indexFile.write(indexContents)
+      indexFile.close()
     self._log.info("Output available in %s", outputDir)
     if args.bucket and not args.dry_run:
       subprocess.check_call([
