@@ -23,7 +23,11 @@ import logging
 import phong.state
 import phong.wiki
 import phong.templates
-import spiff
+
+try:
+  import spiff
+except:
+  spiff = None
 
 from email.mime.text import MIMEText
 import smtplib
@@ -141,7 +145,7 @@ class Phong(object):
 
   @property
   def spiff(self):
-    if self._spiff is None:
+    if spiff is not None and self._spiff is None:
       self._spiff = spiff.API(self.config.get('phong', 'spiff-api'))
     return self._spiff
 
