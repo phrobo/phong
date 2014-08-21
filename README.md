@@ -174,6 +174,8 @@ maintain for you:
 * [[Next Meeting]]
 * [[Last meeting]]
 
+(These pages and their contents are configurable. See the relevant section below.)
+
 The [[Next Meeting]] page should be exactly:
 
     #Redirect [[Meetings/YYYY-MM-DD]]
@@ -223,6 +225,22 @@ should feel welcome to change the agenda as they see fit.
 This meeting template should be a special template, as compared to more mundane
 ones such as the one for mailing out meeting minutes, or for announcing upcoming
 events.
+
+### Configuration
+
+"But my space is different!!11", you scream into the aether.
+
+Thats okay. Phong understands. There are a few configuration options that Phong
+understands to adapt to your space.
+
+* next-page - Instead of "Next Meeting", maybe yours is named "Next meeting"
+* previous-page - Instead of "Previous Meeting", maybe yours is named "Last
+  meeting"
+* meeting-template - Don't want to use Meetings/Template? Fine. Set it to
+  "Meeting Notes Template".
+* meeting-title-format - Meetings aren't in the format of Meetings/%Y-%m-%d?
+  Noisebridge uses Meeting Notes %Y %m %d, for example. See the documentation
+  for python's strptime/strftime functions in the datetime module.
 
 ### Template variables
 When producing the next week's page and all emails, a number of variables are
