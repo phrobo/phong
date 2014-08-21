@@ -25,7 +25,11 @@ class SynhakPlugin(phong.Plugin):
     return []
 
   def buildContext(self, phong):
-    return {'greeting': self.randomGreeting(phong)}
+    try:
+      greeting = self.randomGreeting(phong)
+    except:
+      return {}
+    return {'greeting': greeting}
 
   def randomGreeting(self, phong):
     if self._greetings is None:
