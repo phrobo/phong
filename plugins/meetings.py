@@ -25,19 +25,28 @@ class MeetingCommand(Command, MailCommandMixin):
   def name(self):
     return "meetings"
 
+  def titleFromDate(self, date):
+    return date.strftime(self.phong.config.get('meetings', 'meeting-title-format'))
+
+  def dateFromTitle(self, title):
+    return datetime.datetime.strptime(title, self.phong.config.get('meetings', 'meeting-title-format')).date()
+
   def helpText(self):
     return "Handle meeting minutes"
 
   def nextMeetingDate(self):
-    stamp = map(int, self.phong.wiki.getPage("Next Meeting", followRedir=False).getWikiText().split("/")[1].replace("]", "").split("-"))
-    nextDate = datetime.date(stamp[0], stamp[1], stamp[2])
+    nextDate = self.dateFromTitle(self.phong.wiki.getPage(self.phong.config.get('meetings', 'next-page'), followRedir=False).getWikiText().split('[[')[1].replace(']', ''))
     now = datetime.date.today()
-    if now > nextDate:
+    while now > nextDate:
       nextDate = nextDate+datetime.timedelta(days=7)
     return nextDate
 
   def lastMeetingDate(self):
-    return self.nextMeetingDate()+datetime.timedelta(days=-7)
+    lastDate = self.nextMeetingDate() + datetime.timedelta(days=-7)
+    meeting = self.getMeeting(lastDate)
+    while not self.getMeeting(lastDate).alreadyExists():
+      lastDate = lastDate + datetime.timedelta(days=-7)
+    return lastDate
 
   def alreadySentMinutes(self):
     return bool(self.state['meetings'][str(self.lastMeetingDate())]['minutesSent'])
@@ -46,34 +55,33 @@ class MeetingCommand(Command, MailCommandMixin):
     return Meeting(self, date)
 
   def minutesReadyToBeSent(self):
-    return True
     lastMeeting = self.getMeeting(self.lastMeetingDate())
     return "<phongMinutesNotReady/>" not in lastMeeting.getWikiText()
 
   def makeNextMeeting(self, args):
     lastMeeting = self.lastMeetingDate()
     nextMeeting = self.nextMeetingDate()
-    nextPage = self.phong.wiki.getPage("Next Meeting", followRedir=False)
-    lastPage = self.phong.wiki.getPage("Last Meeting", followRedir=False)
+    nextPage = self.phong.wiki.getPage(self.phong.config.get('meetings', 'next-page'), followRedir=False)
+    lastPage = self.phong.wiki.getPage(self.phong.config.get('meetings', 'previous-page'), followRedir=False)
 
     nextMeetingPage = self.getMeeting(nextMeeting)
     if nextMeetingPage.alreadyExists():
       self._log.info("Next meeting page already exists!")
     else:
       params = nextMeetingPage.templateParams()
-      template = self.phong.getTemplate("Meetings/Template", params,
+      template = self.phong.getTemplate(self.phong.config.get('meetings', 'meeting-template'), params,
           prefix="")
       self._log.info("Creating next meeting at %s", params['meetingLink'])
       if not args.dry_run:
         nextMeetingPage.wikiPage.edit(summary="Created new meeting page",
             bot=True, text=unicode(template))
-    self._log.info("Updating [[Last Meeting]]")
+    self._log.info("Updating [[Last Meeting]] -> [[%s]]"%(self.titleFromDate(lastMeeting)))
     if not args.dry_run:
       lastPage.edit(summary="Update previous meeting link", bot=True,
-          text="#Redirect [[Meetings/%s]]"%(Meeting.formatMeetingDate(lastMeeting)))
-    self._log.info("Updating [[Next Meeting]]")
+          text="#Redirect [[%s]]"%(self.titleFromDate(lastMeeting)))
+    self._log.info("Updating [[Next Meeting]] -> [[%s]]"%(self.titleFromDate(nextMeeting)))
     if not args.dry_run:
-      nextPage.edit(summary="Update next meeting link", bot=True, text="#Redirect [[Meetings/%s]]"%(Meeting.formatMeetingDate(nextMeeting)))
+      nextPage.edit(summary="Update next meeting link", bot=True, text="#Redirect [[%s]]"%(self.titleFromDate(nextMeeting)))
 
   def mailLastMinutes(self, args):
     if self.state['meetings'][str(self.lastMeetingDate())]['minutesSent'] is  True:
@@ -139,28 +147,26 @@ class MeetingCommand(Command, MailCommandMixin):
 
 class Meeting(object):
 
-  @staticmethod
-  def formatMeetingDate(date):
-    assert isinstance(date, datetime.date)
-    return "%d-%d-%d"%(date.year, date.month, date.day)
-
   @property
   def wikiPage(self):
     return self._wikiPage
 
+  @property
+  def title(self):
+    return self._command.titleFromDate(self._date)
+
   def __init__(self, command, date, *args, **kwargs):
     self._date = date
-    self._pageName = "Meetings/%s"%(Meeting.formatMeetingDate(date))
     self._command = command
     self._phong = command.phong
-    self._wikiPage = self._phong.wiki.getPage(self._pageName)
+    self._wikiPage = self._phong.wiki.getPage(self.title)
 
   def templateParams(self):
     return {
       'date': self._date,
-      'meetingLink': "%s%s"%(self._phong.config.get('phong', 'mediawiki-url'), self._pageName),
-      'next': "%s"%(self.nextMeeting()._pageName),
-      'previous': "%s"%(self.previousMeeting()._pageName)
+      'meetingLink': "%s%s"%(self._phong.config.get('phong', 'mediawiki-url'), self.title),
+      'next': "%s"%(self.nextMeeting().title),
+      'previous': "%s"%(self.previousMeeting().title)
     }
 
   def nextMeeting(self):
@@ -203,8 +209,8 @@ class Meeting(object):
     previous = self.previousMeeting()
     next = self.nextMeeting()
     meta = self.meta()
-    meta.params['previous'] = previous._pageName
-    meta.params['next'] = next._pageName
+    meta.params['previous'] = previous.title
+    meta.params['next'] = next.title
     self.setMeta(meta)
 
   def alreadyExists(self):
