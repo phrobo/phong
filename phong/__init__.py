@@ -175,10 +175,16 @@ class Phong(object):
       cxt.update(defaultContext)
     else:
       cxt = defaultContext
-    engines = [
-      phong.templates.FileEngine(self),
-      phong.templates.WikiEngine(self),
-    ]
+
+    engines = []
+
+    if self.config.has_option('phong', 'template-paths'):
+      for path in self.config.get('phong', 'template-paths').split(','):
+        engines.append(phong.templates.FileEngine(self, path.strip()))
+
+    engines.append(phong.templates.FileEngine(self, 'templates'))
+    engines.append(phong.templates.WikiEngine(self))
+
     for e in engines:
       if e.hasTemplate(name, prefix):
         return e.getTemplate(name, prefix, cxt)

@@ -69,8 +69,9 @@ class PhongTemplate(object):
     return self.render()
 
 class FileEngine(TemplateEngine):
-  def __init__(self, phong):
+  def __init__(self, phong, prefix):
     super(FileEngine, self).__init__(phong)
+    self._prefix = prefix
 
   def hasTemplate(self, pageName, prefix):
     return os.path.exists(self.templatePath(pageName, prefix))
@@ -81,7 +82,7 @@ class FileEngine(TemplateEngine):
   def templatePath(self, pageName, prefix):
     if prefix is None:
       prefix = ''
-    return os.path.sep.join(('templates', prefix+pageName))
+    return os.path.sep.join((self._prefix, prefix+pageName))
 
 class FileTemplate(PhongTemplate):
   def __init__(self, pageName, defaultCxt):
