@@ -1,0 +1,4 @@
+This document was generated with ${phong.argv} on ${phong.now}. You can read the
+most up-to-date version at [http://github.com/phrobo/phong GitHub].
+
+${readme}
