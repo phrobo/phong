@@ -214,8 +214,9 @@ class Phong(object):
 
   def main(self, argv):
     parser = argparse.ArgumentParser(prog='phong', add_help=False)
-    parser.add_argument('-c', '--config', help='Configuration file to use',
-        default="/etc/phong.cfg")
+    parser.add_argument('-c', '--config', help='Configuration file to use. Can be specified multiple times. Later files override earlier ones.',
+        action='append',
+        default=["/etc/phong.cfg",])
     parser.add_argument('-d', '--dry-run', help='Dont actually do anything',
         default=False, action='store_true')
     parser.add_argument('-D', '--debug', help='Print debug messages',
@@ -226,7 +227,8 @@ class Phong(object):
     if args[0].debug:
       logging.basicConfig(level=logging.DEBUG)
 
-    self.loadConfig(args[0].config)
+    for config in args[0].config:
+      self.loadConfig(config)
     self.loadPlugins()
     subparser = parser.add_subparsers(help='action')
     for command in self._commands:
