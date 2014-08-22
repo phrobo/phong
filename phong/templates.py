@@ -17,6 +17,21 @@ from Cheetah.Template import Template
 from wikitools import page
 import logging
 import os
+import datetime
+
+class PhongTemplateAPI(object):
+  """A sandboxing wrapper around Phong that doesn't expose everything to templates, but most things"""
+
+  def __init__(self, phong):
+    self.__phong = phong
+
+  @property
+  def now(self):
+    return datetime.datetime.utcnow()
+
+  @property
+  def argv(self):
+    return self.__phong.argv
 
 class TemplateEngine(object):
   def __init__(self, phong):
