@@ -160,7 +160,9 @@ class Phong(object):
     return self._wiki
 
   def buildContext(self):
-    context = {}
+    context = {
+      'phong': templates.PhongTemplateAPI(self),
+    }
     for plugin in self._plugins.getAllPlugins():
       cxt = plugin.plugin_object.buildContext(self)
       if isinstance(cxt, dict):
