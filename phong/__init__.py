@@ -204,6 +204,14 @@ class Phong(object):
     dir = os.path.expanduser(self._config.get('phong', 'state-dir'))
     return phong.state.State(os.path.sep.join((dir, "%s.state.json"%(name))))
 
+  @property
+  def argv(self):
+    return self._argv
+
+  @property
+  def args(self):
+    return self._args
+
   def main(self, argv):
     parser = argparse.ArgumentParser(prog='phong', add_help=False)
     parser.add_argument('-c', '--config', help='Configuration file to use',
@@ -226,6 +234,7 @@ class Phong(object):
           help=command.helpText())
       pluginArgs.set_defaults(command_obj=command)
       command.buildArgs(pluginArgs)
-    args = parser.parse_args(argv)
+    self._argv = argv
+    self._args = parser.parse_args(argv)
 
-    return args.command_obj.execute(args)
+    return self._args.command_obj.execute(args)
