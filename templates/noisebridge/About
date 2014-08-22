@@ -1,0 +1,7 @@
+This document was generated with ${phong.argv} on ${phong.now}. You can read the
+most up-to-date version at [http://github.com/phrobo/phong GitHub]. For the
+previous incarnation of this robot, check out [[Secretaribot]]
+
+${readme}
+
+{{ManualPage}}
