@@ -6,3 +6,7 @@ requests
 wikitools
 Spiff
 Yapsy
+mwparserfromhell
+pytz
+icalendar
+pypandoc
