@@ -245,4 +245,4 @@ class Phong(object):
     self._argv = argv
     self._args = parser.parse_args(argv)
 
-    return self._args.command_obj.execute(args)
+    return self._args.command_obj.execute(self._args)
