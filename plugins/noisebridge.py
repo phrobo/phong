@@ -97,7 +97,7 @@ class NBEvents(Command):
       startTime = None
       for param in event.params:
         param = param.split('=')
-        if len(param):
+        if len(param) == 2:
           name, value = map(unicode.strip, param)
           if name == "time":
             startTime = dateutil.parser.parse(value).replace(tzinfo=pytz.timezone("America/Los_Angeles"))
@@ -107,6 +107,8 @@ class NBEvents(Command):
             calEvent.add('summary', title)
           if name == "description":
             calEvent.add('description', value)
+        else:
+          self._log.warn("Can't figure out how to decode %s", param)
       calEvent.add('uid', self.generateUID(title, startTime))
     return events
 
