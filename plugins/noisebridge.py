@@ -23,6 +23,7 @@ import hashlib
 import calendar
 from icalendar import Calendar, Event
 import wikitools.page
+import re
 
 class NoisebridgePlugin(Plugin):
   def availableCommands(self):
@@ -85,6 +86,9 @@ class NBEvents(Command):
   def findCalendar(self, wiki):
     return wiki.get_sections(matches="Event Calendar", levels=xrange(0, 100))[0]
 
+  def findRecurringCalendar(self, wiki):
+    return wiki.get_sections(matches="Recurring Events", levels=xrange(0, 10))[0]
+
   def getEvents(self):
     wiki = self.phong.wiki.getPage("Category:Events").getWikiText()
     structure = mw.parse(wiki)
@@ -110,7 +114,98 @@ class NBEvents(Command):
         else:
           self._log.warn("Can't figure out how to decode %s", param)
       calEvent.add('uid', self.generateUID(title, startTime))
+
+    calendar = self.findRecurringCalendar(structure)
+    weekday = None
+    for line in calendar.split("\n"):
+      if line.startswith("===="):
+        tokens = line[4:-4].lower().strip().split()
+        weekday = None
+        for t in tokens:
+          if t.endswith("s"):
+            weekday = t[0:-1]
+            break
+      elif "{{Template:Recurring}}" in line:
+        if weekday is None:
+          self._log.info("No idea what day %s is happening", title)
+          continue
+
+        title = line.split('{{Template:Recurring}}')[1]
+        title, description, startTime, endTime = self.massageRecurringEvent(weekday, title)
+        self._log.info("Found recurring %s event: %s", weekday, title)
+        calEvent = Event()
+        events.append(calEvent)
+        calEvent.add('summary', title)
+        calEvent.add('description', description)
+        calEvent.add('dtstart', startTime)
+        calEvent.add('dtend', endTime)
+        calEvent.add('rrule', {'freq': 'weekly'})
+        calEvent.add('uid', self.generateUID(line, startTime))
     return events
+
+  def massageRecurringEvent(self, weekday, body):
+    date = self.nextDayDate(weekday)
+
+    start = date
+    end = date
+    title = body
+    description = body
+
+    wikiLinks = re.findall("\[\[(.+)\]\]", body)
+
+    if len(wikiLinks):
+      if '|' in wikiLinks[0]:
+        title = wikiLinks[0].split('|', 1)[1]
+      else:
+        title = wikiLinks[0]
+    else:
+      extLinks = re.findall("\[(.+?) (.+?)\]", body)
+      if len(extLinks):
+        title = extLinks[0][1]
+
+    times = re.findall("(\d+):?(\d+)? *(A|P)m?", body.lower(), re.I)
+
+    if len(times):
+      start = self.parseTime(start, times[0])
+      if len(times) > 1:
+        end = self.parseTime(start, times[1])
+      else:
+        end = start + datetime.timedelta(minutes=60)
+
+    return (title, description, start, end)
+
+  def parseTime(self, d, time):
+      hour = int(time[0])
+      minute = 0
+
+      if len(time[1]):
+        minute = int(time[1])
+
+      ampm = time[2]
+
+      if ampm == 'p' and hour < 12:
+        hour += 12
+      if ampm == 'a' and hour == 12:
+        hour = 0
+
+      return datetime.datetime(day=d.day, month=d.month, year=d.year, hour=hour, minute=minute)
+
+  def nextDayDate(self, weekday):
+    d = datetime.date.today()
+    weekdayMap = {
+      'sunday': 0,
+      'monday': 1,
+      'tuesday': 2,
+      'wednesday': 3,
+      'thursday': 4,
+      'friday': 5,
+      'saturday': 6
+    }
+    weekdayNum = weekdayMap[weekday]
+    days_ahead = weekdayNum - d.weekday()
+    if days_ahead <= 0:
+      days_ahead += 7
+    return d + datetime.timedelta(days_ahead)
 
   def generateUID(self, title, timestamp):
     stamp = calendar.timegm(timestamp.timetuple())
